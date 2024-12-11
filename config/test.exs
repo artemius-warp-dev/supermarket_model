@@ -1,0 +1,24 @@
+import Config
+
+
+# We don't run a server during test. If one is required,
+# you can enable the server option below.
+config :gateway, GatewayWeb.Endpoint,
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "lWm5OchjiuyX8xFq+M2M4wmibJyCv4mhI8xn/hwLczwOJ5bOMR3KTdhghF0gK9uk",
+  server: false
+
+# In test we don't send emails
+config :gateway, Gateway.Mailer, adapter: Swoosh.Adapters.Test
+
+# Disable swoosh api client as it is only required for production adapters
+config :swoosh, :api_client, false
+
+# Print only warnings and errors during test
+config :logger, level: :warning
+
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime
+
+
+config :gateway, :message_broker, MessageBrokerMock
