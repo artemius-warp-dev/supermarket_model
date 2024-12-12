@@ -20,7 +20,6 @@ defmodule ProductServer do
 
   @impl true
   def handle_call(:calculate_cost, _from, {_, type, items} = state) do
-    
     total_cost =
       StrategyResolver.update_product_strategy(type, :amount, Enum.count(items))
       |> StrategyResolver.calculate_price()

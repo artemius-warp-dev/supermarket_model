@@ -23,7 +23,8 @@ defmodule Gateway.MixProject do
   def application do
     [
       mod: {Gateway.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools],
+      included_applications: [:basket_manager],
     ]
   end
 
@@ -45,7 +46,9 @@ defmodule Gateway.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.5"},
-      {:message_broker, in_umbrella: true}
+      {:message_broker, in_umbrella: true},
+      {:basket_manager, in_umbrella: true},
+      {:basket_server,  in_umbrella: true}
     ]
   end
 

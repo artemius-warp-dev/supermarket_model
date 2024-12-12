@@ -5,7 +5,7 @@ defmodule StrategyResolver do
   def get_product_config(product) do
     # TODO error handling
     Application.get_env(:product_manager, :strategies)
-    |> Map.get(product, nil)
+    |> Map.get(String.to_atom(product), nil)
     |> to_struct()
   end
 

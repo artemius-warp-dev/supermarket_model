@@ -48,27 +48,23 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-
 config :gateway, :message_broker, MessageBroker
 config :message_broker, :basket_manager, BasketManager
 config :message_broker, :cluster_discovery, ClusterDiscovery
 
-
-# config :basket_manager,
-#   basket_servers: %{
-#     "supermarket_1" => 3,
-#     "supermarket_2" => 5,
-#     "supermarket_3" => 2
-#   }
-
 config :libcluster,
   topologies: [
-    my_cluster: [
+    basket_server_cluster: [
       strategy: Cluster.Strategy.Epmd,
-      config: [hosts: :peer]
+      config: [
+        hosts: [
+          :"basket_server_1@172.17.0.2",
+          :"basket_server_2@172.17.0.3",
+          :"basket_server_3@172.17.0.4"
+        ]
+      ]
     ]
   ]
-
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
@@ -81,4 +77,3 @@ import_config "#{config_env()}.exs"
 #       format: "$date $time [$level] $metadata$message\n",
 #       metadata: [:user_id]
 #
-

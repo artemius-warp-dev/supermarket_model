@@ -30,7 +30,7 @@ defmodule ProductManager do
         Float.round(amount * price / 100, 2)
       end
 
-      def calculate(%{price: price, amount: amount}), do: amount * price
+      def calculate(%{price: price, amount: amount}), do: Float.round(amount * price / 100, 2)
     end
   end
 
@@ -40,11 +40,11 @@ defmodule ProductManager do
 
     defimpl Strategy do
       def calculate(%{price: price, amount: amount}) when amount >= 3 do
-        price = price * 0.75
+        price = Float.round(price / 3 * 2, 2)
         Float.round(amount * price / 100, 2)
       end
 
-      def calculate(%{price: price, amount: amount}), do: amount * price
+      def calculate(%{price: price, amount: amount}), do: Float.round(amount * price / 100, 2)
     end
   end
 end

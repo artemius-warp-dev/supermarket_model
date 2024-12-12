@@ -13,16 +13,7 @@ defmodule BasketManager do
   """
   @behaviour BasketManagerBehaviour
 
-  ## Public API for Starting Servers
-  def start_basket_servers() do
-    config = Application.get_env(:basket_manager, :supermarket_partitions)
-
-    for {supermarket_id, partition_count} <- config do
-      for partition <- 1..partition_count do
-        BasketServerSupervisor.start_server("#{supermarket_id}_#{partition}", supermarket_id)
-      end
-    end
-  end
+ 
 
   ## Public API for Shutting Down Servers
   def shutdown_basket_server(partition) do
@@ -48,7 +39,6 @@ defmodule BasketManager do
   # end
 
   def handle_request(basket_server, supermarket_id, user_id, items) do
-    # GenServer.call(basket_server, {:process_basket, supermarket_id, user_id, items})
-    {:ok, %{}}
+    GenServer.call({:global, basket_server}, {:process_basket, supermarket_id, user_id, items})
   end
 end

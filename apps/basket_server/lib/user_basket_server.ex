@@ -34,13 +34,13 @@ defmodule UserBasketServer do
   defp via_tuple(user_id), do: {:global, :"user_basket_server_#{user_id}"}
 
   defp split_by_product(basket) do
-    Enum.group_by(basket, fn %{type: product_type} -> product_type end)
+    Enum.group_by(basket, fn product -> product end)  #TODO short version
   end
 
   defp process_product_group(user_id, product_type, items) do
     server_name = product_server_name(user_id, product_type)
     {:ok, pid} = ProductDynamicSupervisor.start_product_server(user_id, product_type, items)
-    GenServer.call(pid, {:calculate_cost, items})
+    GenServer.call(pid, :calculate_cost)
   end
 
   defp product_server_name(user_id, product_type),

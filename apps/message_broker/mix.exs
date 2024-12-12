@@ -25,7 +25,7 @@ defmodule MessageBroker.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:mox, "~> 1.0.0"},
+      {:mox, "~> 1.0.0", only: :test},
       {:basket_manager, in_umbrella: true},
       {:libcluster, "~> 3.4"}
     ]
