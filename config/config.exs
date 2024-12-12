@@ -50,14 +50,24 @@ config :phoenix, :json_library, Jason
 
 
 config :gateway, :message_broker, MessageBroker
+config :message_broker, :basket_manager, BasketManager
+config :message_broker, :cluster_discovery, ClusterDiscovery
 
 
-config :basket_manager,
-  basket_servers: %{
-    "supermarket_1" => 3,
-    "supermarket_2" => 5,
-    "supermarket_3" => 2
-  }
+# config :basket_manager,
+#   basket_servers: %{
+#     "supermarket_1" => 3,
+#     "supermarket_2" => 5,
+#     "supermarket_3" => 2
+#   }
+
+config :libcluster,
+  topologies: [
+    my_cluster: [
+      strategy: Cluster.Strategy.Epmd,
+      config: [hosts: :peer]
+    ]
+  ]
 
 
 # Import environment specific config. This must remain at the bottom

@@ -4,7 +4,7 @@ defmodule GatewayTest do
   import Mox
   alias GatewayWeb.BasketController
 
-  Mox.defmock(MessageBrokerMock, for: MessageBrokerBehavior)
+  defmock(MessageBrokerMock, for: MessageBrokerBehavior)
 
   setup :verify_on_exit!
 

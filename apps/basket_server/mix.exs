@@ -31,7 +31,8 @@ defmodule BasketServer.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:mox, "~> 1.0", only: :test},
       {:market_state, in_umbrella: true},
-      {:basket_manager, in_umbrella: true}
+      {:basket_manager, in_umbrella: true},
+      {:product_manager, in_umbrella: true}
     ]
   end
 end
