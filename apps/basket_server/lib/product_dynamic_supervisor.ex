@@ -13,7 +13,7 @@ defmodule ProductDynamicSupervisor do
     child_spec = %{
       id: ProductServer,
       start: {ProductServer, :start_link, [{product_type, items, parent_server}]},
-      restart: :transient
+      restart: :temporary
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)

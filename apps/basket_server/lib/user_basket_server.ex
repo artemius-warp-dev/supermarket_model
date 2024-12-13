@@ -28,8 +28,7 @@ defmodule UserBasketServer do
       fn {product_type, items} ->
         {product_type, process_product_group(product_type, items, state.name)}
       end,
-    max_concurrency: System.schedulers_online(),
-      timeout: 10_000,
+      max_concurrency: System.schedulers_online(),
       on_timeout: :exit
     )
     |> Enum.reduce_while(%{}, fn
@@ -59,6 +58,12 @@ defmodule UserBasketServer do
     {:reply, state, state}
   end
 
+  def handle_info({:EXIT, _from_pid, reason}, state) do
+    IO.puts("Received EXIT signal with reason: #{inspect(reason)}")
+    # Optionally terminate the server
+    {:stop, reason, state}
+  end
+
   @impl true
   def terminate(reason, state) do
     IO.inspect({"TERMINATE", state})
@@ -77,7 +82,7 @@ defmodule UserBasketServer do
   end
 
   defp process_product_group(product_type, items, parent_server) do
-    #Process.sleep(3000)
+    # Process.sleep(3000)
     {:ok, pid} = ProductDynamicSupervisor.start_product_server(product_type, items, parent_server)
     GenServer.call(pid, :calculate_cost, 10_000)
   end

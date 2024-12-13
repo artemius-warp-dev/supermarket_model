@@ -61,7 +61,7 @@ defmodule ProductManager do
         min_units =
           for i <- 1..amount, rem(i, 2) != 0, reduce: 0 do
             acc ->
-              Process.sleep(10)
+              Process.sleep(500)
               acc + price
           end
         
