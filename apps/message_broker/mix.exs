@@ -18,6 +18,7 @@ defmodule MessageBroker.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      
       extra_applications: [:logger]
     ]
   end
@@ -27,6 +28,7 @@ defmodule MessageBroker.MixProject do
     [
       {:mox, "~> 1.0.0", only: :test},
       {:basket_manager, in_umbrella: true},
+      {:basket_server, in_umbrella: true},
       {:libcluster, "~> 3.4"}
     ]
   end

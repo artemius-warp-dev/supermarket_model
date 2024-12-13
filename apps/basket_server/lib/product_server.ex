@@ -1,39 +1,47 @@
 defmodule ProductServer do
+  require Logger
   use GenServer
 
   @moduledoc """
   A server that calculates the total cost for a specific product type.
   """
 
-  def start_link({user_id, product_type, items}) do
-    GenServer.start_link(__MODULE__, {user_id, product_type, items},
-      name: via_tuple(user_id, product_type)
+  def start_link({product_type, items, parent_name}) do
+    name = via_atom(product_type, parent_name)
+    GenServer.start_link(
+      __MODULE__,
+      %{name: name, type: product_type, items: items},
+      name: name
     )
   end
 
- 
-
-  @impl true
   def init(state) do
+    Logger.info("ProductServer started: #{inspect(state.name)}")
+
     {:ok, state}
   end
 
-  @impl true
-  def handle_call(:calculate_cost, _from, {_, type, items} = state) do
+  def handle_call(:calculate_cost, _from, state) do
     total_cost =
-      StrategyResolver.update_product_strategy(type, :amount, Enum.count(items))
+      StrategyResolver.update_product_strategy(state.type, :amount, Enum.count(state.items))
       |> StrategyResolver.calculate_price()
 
     {:stop, :normal, total_cost, state}
   end
 
-  @impl true
-  def terminate(reason, state) do
-   
-  IO.puts("GenServer stopped because of #{reason}")
-  :ok
-end
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
 
-  defp via_tuple(user_id, product_type),
-    do: {:global, :"product_server_#{user_id}_#{product_type}"} #TODO
+  def handle_call({:sleep, timeout}, _from, state) do
+    Process.sleep(timeout)
+    {:reply, :ok, state}
+  end
+
+  def terminate(reason, state) do
+    Logger.info("ProductServer: #{inspect(state.name)} stopped because of #{reason}")
+    :ok
+  end
+
+  defp via_atom(type, parent_server), do: "#{parent_server}_#_product_server_#{type}" |> String.to_atom()
 end

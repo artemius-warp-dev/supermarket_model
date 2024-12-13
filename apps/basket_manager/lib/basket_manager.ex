@@ -15,10 +15,10 @@ defmodule BasketManager do
 
  
 
-  ## Public API for Shutting Down Servers
-  def shutdown_basket_server(partition) do
-    BasketServerSupervisor.shutdown_basket_server(partition)
-  end
+  # ## Public API for Shutting Down Servers
+  # def shutdown_basket_server(partition) do
+  #   BasketServerSupervisor.shutdown_basket_server(partition)
+  # end
 
   # def start_server(partition, sm_id) do
   #   case DynamicSupervisor.start_child(

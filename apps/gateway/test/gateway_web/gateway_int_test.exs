@@ -1,10 +1,6 @@
 defmodule GatewayIntegrationTest do
   use GatewayWeb.ConnCase, async: true
 
-  import Mox
-
-  alias ApiGateway
-
   setup do
     Application.put_env(:gateway, :message_broker, MessageBroker)
     Application.put_env(:message_broker, :basket_manager, BasketManager)
@@ -28,10 +24,10 @@ defmodule GatewayIntegrationTest do
       })
       |> json_response(200)
 
-    assert %{"total_cost" => 0} = res 
+    assert %{"total_cost" => 0} = res
   end
 
-    test "[GR1,SR1,GR1,GR1,CF1] basket", %{conn: conn} do
+  test "[GR1,SR1,GR1,GR1,CF1] basket", %{conn: conn} do
     res =
       conn
       |> post("/api/basket", %{
@@ -57,7 +53,7 @@ defmodule GatewayIntegrationTest do
     assert %{"total_cost" => 16.61} = res
   end
 
-    test "[GR1,GR1] basket", %{conn: conn} do
+  test "[GR1,GR1] basket", %{conn: conn} do
     res =
       conn
       |> post("/api/basket", %{
@@ -70,8 +66,7 @@ defmodule GatewayIntegrationTest do
     assert %{"total_cost" => 3.11} = res
   end
 
-
-      test "[GR1,CF1,SR1,CF1,CF1] basket", %{conn: conn} do
+  test "[GR1,CF1,SR1,CF1,CF1] basket", %{conn: conn} do
     res =
       conn
       |> post("/api/basket", %{
@@ -83,5 +78,4 @@ defmodule GatewayIntegrationTest do
 
     assert %{"total_cost" => 30.57} = res
   end
-  
 end

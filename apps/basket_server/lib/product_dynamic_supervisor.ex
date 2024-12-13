@@ -9,11 +9,11 @@ defmodule ProductDynamicSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def start_product_server(user_id, product_type, items) do
+  def start_product_server(product_type, items, parent_server) do
     child_spec = %{
       id: ProductServer,
-      start: {ProductServer, :start_link, [{user_id, product_type, items}]},
-      restart: :temporary
+      start: {ProductServer, :start_link, [{product_type, items, parent_server}]},
+      restart: :transient
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)
