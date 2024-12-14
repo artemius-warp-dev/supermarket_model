@@ -39,6 +39,6 @@ defmodule BasketManager do
   # end
 
   def handle_request(basket_server, supermarket_id, user_id, items) do
-    GenServer.call({:global, basket_server}, {:process_basket, supermarket_id, user_id, items})
+    GenServer.call({:global, basket_server}, {:process_basket, supermarket_id, user_id, items}, 7000) #TODO
   end
 end

@@ -156,24 +156,3 @@ defmodule BasketServerIntTest do
   end
 end
 
-# test_data = [
-#    {"user_1", "sp1", ~w(GR1_test GR1_test GR1_test) |> Stream.cycle() |> Enum.take(1000)},
-#    {"user_2", "sp2",
-#     ~w(SR1 SR1 GR1 SR1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_3", "sp2",
-#     ~w(GR1 CF1 SR1 CF1 CF1_test) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_4", "sp2",
-#     ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_5", "sp1",
-#     ~w(GR1 CF1 SR1 CF1 CF1_test) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_6", "sp3",
-#     ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_1", "sp3",
-#     ~w(GR1 CF1 SR1 CF1 CF1_test) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_3", "sp3",
-#     ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_9", "sp3",
-#     ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
-#    {"user_10", "sp3",
-#     ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))}
-#  ]

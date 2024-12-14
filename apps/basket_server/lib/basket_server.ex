@@ -20,6 +20,7 @@ defmodule BasketServer do
 
   def process_basket(server_name, super_market, user_id, basket) do
     GenServer.call({:global, server_name}, {:process_basket, super_market, user_id, basket})
+    |> IO.inspect()
   end
 
   @impl true
@@ -34,28 +35,50 @@ defmodule BasketServer do
     {:ok, user_server} =
       UserDynamicSupervisor.start_user_basket(user_id, basket, state.global_name)
 
-    Process.monitor(user_server)
+    # Process.monitor(user_server)
+
+    task =
+      Task.Supervisor.async_nolink(BasketServer.TaskSupervisor, fn ->
+        GenServer.call(user_server, :process_basket)
+      end)
 
     response =
-      try do
-        case GenServer.call(user_server, :process_basket) do
-          {:error, reason} ->
-            {:error, reason}
-
-          result ->
-            total_cost =
-              Enum.reduce(result, 0, fn
-                {_, value}, acc -> acc + value
-              end)
-
-            {:ok, %{total_cost: total_cost}}
-        end
-      catch
-        :exit, reason ->
+      case Task.yield(task) || Task.shutdown(task) do
+        {:ok, {:error, reason}} ->
           {:error, reason}
+
+        {:ok, result} ->
+          process_result(result)
+
+        nil ->
+          {:error, :timeout}
+
+        err ->
+          Logger.error("Unexpected error: #{inspect(err)}")
+          {:error, :user_server_error}
       end
 
     {:reply, response, Map.put(state, user_id, response)}
+  end
+
+  @impl true
+  def terminate(reason, state) do
+    Logger.info(
+      "BasketServer: #{inspect(state.global_name)} stopped because of #{inspect(reason)}"
+    )
+
+    :ok
+  end
+
+  defp process_result(result) do
+    Enum.reduce_while(result, 0, fn
+      {_, {:error, reason}}, _ -> {:halt, {:error, reason}}
+      {_, value}, acc -> {:cont, acc + value}
+    end)
+    |> case do
+      {:error, reason} -> {:error, reason}
+      res when is_number(res) -> {:ok, %{total_cost: Float.ceil(res, 2)}}
+    end
   end
 
   # def handle_info({:DOWN, ref, :process, _pid, reason}, state) do

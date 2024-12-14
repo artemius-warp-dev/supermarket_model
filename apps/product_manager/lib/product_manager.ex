@@ -57,7 +57,6 @@ defmodule ProductManager do
 
     defimpl Strategy do
       def calculate(%{price: price, amount: amount}) do
-        IO.inspect({"GR1TestStrategy", amount})
         min_units =
           for i <- 1..amount, rem(i, 2) != 0, reduce: 0 do
             acc ->
@@ -65,7 +64,7 @@ defmodule ProductManager do
               acc + price
           end
         
-        Float.round(min_units / 100, 2)
+        Float.ceil(min_units / 100, 2)
       end
     end
   end
@@ -77,10 +76,10 @@ defmodule ProductManager do
       def calculate(%{price: price, amount: amount}) when amount >= 3 do
         price = 450
         Process.sleep(1000)
-        Float.round(amount * price / 100, 2)
+        Float.ceil(amount * price / 100, 2)
       end
 
-      def calculate(%{price: price, amount: amount}), do: Float.round(amount * price / 100, 2)
+      def calculate(%{price: price, amount: amount}), do: Float.ceil(amount * price / 100, 2)
     end
   end
 
@@ -91,12 +90,12 @@ defmodule ProductManager do
     defimpl Strategy do
       def calculate(%{price: price, amount: amount}) when amount >= 3 do
         
-        price = Float.round(price / 3 * 2, 2)
+        price = Float.ceil(price / 3 * 2, 2)
         Process.sleep(1000)
-        Float.round(amount * price / 100, 2)
+        Float.ceil(amount * price / 100, 2)
       end
 
-      def calculate(%{price: price, amount: amount}), do: Float.round(amount * price / 100, 2)
+      def calculate(%{price: price, amount: amount}), do: Float.ceil(amount * price / 100, 2)
     end
   end
 

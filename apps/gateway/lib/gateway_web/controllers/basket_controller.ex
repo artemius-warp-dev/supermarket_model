@@ -8,7 +8,10 @@ defmodule GatewayWeb.BasketController do
 
     case message_broker.route_request(sm_id, user_id, items) do
       {:ok, response} -> json(conn, response)
-      {:error, reason} -> json(conn, %{error: reason})
+      {:error, reason} ->
+        conn
+        |> put_status(400)
+        |> json(%{error: reason})
     end
   end
 end

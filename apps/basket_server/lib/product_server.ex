@@ -25,6 +25,7 @@ defmodule ProductServer do
     total_cost =
       StrategyResolver.update_product_strategy(state.type, :amount, Enum.count(state.items))
       |> StrategyResolver.calculate_price()
+      |> IO.inspect()
 
     {:stop, :normal, total_cost, state}
   end

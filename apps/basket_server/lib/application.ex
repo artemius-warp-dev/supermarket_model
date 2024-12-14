@@ -4,7 +4,8 @@ defmodule BasketServer.Application do
   def start(_type, _args) do
     children = [
       {UserDynamicSupervisor, []},
-      {ProductDynamicSupervisor, []}
+      {ProductDynamicSupervisor, []},
+      {Task.Supervisor, name: BasketServer.TaskSupervisor}
     ]
 
     opts = [strategy: :one_for_one, name: BasketServer.Supervisor]

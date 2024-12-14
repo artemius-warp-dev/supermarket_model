@@ -41,7 +41,7 @@ defmodule UserBasketServer do
 
       unhandled, _acc ->
         Logger.error("Unexpected error with reason: #{inspect(unhandled)}")
-        {:halt, {:error, :unhandled_case}}
+        {:halt, {:error, :product_server_error}}
     end)
     |> case do
       {:error, reason} = err ->
@@ -54,7 +54,6 @@ defmodule UserBasketServer do
   end
 
   def handle_call(:get_state, _from, state) do
-    IO.inspect(state)
     {:reply, state, state}
   end
 
@@ -66,7 +65,6 @@ defmodule UserBasketServer do
 
   @impl true
   def terminate(reason, state) do
-    IO.inspect({"TERMINATE", state})
     Logger.info("UserBasketServer: #{inspect(state.name)} stopped because of #{inspect(reason)}")
 
     :ok
@@ -82,8 +80,7 @@ defmodule UserBasketServer do
   end
 
   defp process_product_group(product_type, items, parent_server) do
-    # Process.sleep(3000)
     {:ok, pid} = ProductDynamicSupervisor.start_product_server(product_type, items, parent_server)
-    GenServer.call(pid, :calculate_cost, 10_000)
+    GenServer.call(pid, :calculate_cost)
   end
 end

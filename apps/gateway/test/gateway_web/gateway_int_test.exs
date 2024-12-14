@@ -1,10 +1,13 @@
 defmodule GatewayIntegrationTest do
   use GatewayWeb.ConnCase, async: true
 
+  import Mox
+  defmock(ClusterDiscoveryMock, for: ClusterDiscoveryBehaviour)
+
   setup do
     Application.put_env(:gateway, :message_broker, MessageBroker)
     Application.put_env(:message_broker, :basket_manager, BasketManager)
-    Application.put_env(:message_broker, :cluster_discovery, ClusterDiscovery)
+    # Application.put_env(:message_broker, :cluster_discovery, ClusterDiscovery)
     :ok
 
     on_exit(fn ->
@@ -15,6 +18,9 @@ defmodule GatewayIntegrationTest do
   end
 
   test "empty basket", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
     res =
       conn
       |> post("/api/basket", %{
@@ -28,6 +34,9 @@ defmodule GatewayIntegrationTest do
   end
 
   test "[GR1,SR1,GR1,GR1,CF1] basket", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
     res =
       conn
       |> post("/api/basket", %{
@@ -41,6 +50,9 @@ defmodule GatewayIntegrationTest do
   end
 
   test "[SR1,SR1,GR1,SR1] basket", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
     res =
       conn
       |> post("/api/basket", %{
@@ -54,6 +66,9 @@ defmodule GatewayIntegrationTest do
   end
 
   test "[GR1,GR1] basket", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
     res =
       conn
       |> post("/api/basket", %{
@@ -67,6 +82,9 @@ defmodule GatewayIntegrationTest do
   end
 
   test "[GR1,CF1,SR1,CF1,CF1] basket", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
     res =
       conn
       |> post("/api/basket", %{
@@ -77,5 +95,221 @@ defmodule GatewayIntegrationTest do
       |> json_response(200)
 
     assert %{"total_cost" => 30.57} = res
+  end
+
+  test "to handle 10 requests concurrently", %{conn: conn} do
+    test_data = [
+      {"user_1", "sp1", ~w(GR1 GR1 GR1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_2", "sp2",
+       ~w(SR1 SR1 GR1 SR1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_3", "sp2",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_4", "sp2",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_5", "sp1",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_6", "sp3",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_1", "sp3",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_3", "sp3",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_9", "sp3",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+      {"user_10", "sp3",
+       ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))}
+    ]
+
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, length(test_data), fn -> [:node1, :node2, :node3] end)
+
+    Task.async_stream(test_data, fn {user_id, super_market, basket} ->
+      conn
+      |> post("/api/basket", %{
+        "supermarket_id" => super_market,
+        "user_id" => user_id,
+        "items" => basket
+      })
+      |> json_response(200)
+    end)
+    |> Enum.map(fn {:ok, res} ->
+      assert %{"total_cost" => cost} = res
+    end)
+  end
+
+  test "to handle 1_000_000 requests concurrently", %{conn: conn} do
+    test_data =
+      [
+        {"user_1", "sp1", ~w(GR1 GR1 GR1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_2", "sp2",
+         ~w(SR1 SR1 GR1 SR1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_3", "sp2",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_4", "sp2",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_5", "sp1",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_6", "sp3",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_1", "sp3",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_3", "sp3",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_9", "sp3",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))},
+        {"user_10", "sp3",
+         ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))}
+      ]
+      |> Stream.cycle()
+      # TODO
+      |> Enum.take(1_000)
+
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, length(test_data), fn -> [:node1, :node2, :node3] end)
+
+    Task.async_stream(test_data, fn {user_id, super_market, basket} ->
+      conn
+      |> post("/api/basket", %{
+        "supermarket_id" => super_market,
+        "user_id" => user_id,
+        "items" => basket
+      })
+      |> json_response(200)
+    end)
+    |> Enum.map(fn {:ok, res} ->
+      assert %{"total_cost" => cost} = res
+    end)
+  end
+
+  test "to handle combination of failures in child servers", %{conn: conn} do
+    strategies = Application.get_env(:product_manager, :strategies)
+    # Process.flag(:trap_exit, true)
+
+    Application.put_env(
+      :product_manager,
+      :strategies,
+      Map.put(strategies, :GR1_test, %{module: ProductManager.GR1TestStrategy, price: 1123})
+    )
+
+    test_data =
+      [
+        {"user_1", "sp1", ~w(GR1_test GR1_test GR1_test)},
+        {"user_2", "sp2", ~w(SR1 SR1 GR1 SR1)},
+        {"user_3", "sp2", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_4", "sp2", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_5", "sp1", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_6", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_1", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_3", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_9", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_10", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)}
+      ]
+
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, length(test_data), fn -> [:node1, :node2, :node3] end)
+
+    task =
+      Task.async(fn ->
+        Task.async_stream(test_data, fn {user_id, super_market, basket} ->
+          response =
+            conn
+            |> post("/api/basket", %{
+              "supermarket_id" => super_market,
+              "user_id" => user_id,
+              "items" => basket
+            })
+
+          case response.status do
+            200 -> json_response(response, 200)
+            400 -> json_response(response, 400)
+          end
+        end)
+        |> Enum.map(&elem(&1, 1))
+      end)
+
+    product_superviser_pid = Process.whereis(ProductDynamicSupervisor)
+    user_superviser_pid = Process.whereis(UserDynamicSupervisor)
+    Process.sleep(100)
+    {:ok, product_server_pid} = ServerTestHelpers.fetch_child_pid(product_superviser_pid)
+    Process.exit(product_server_pid, :kill)
+    Process.sleep(1000)
+    {:ok, user_server_pid} = ServerTestHelpers.fetch_child_pid(user_superviser_pid)
+    Process.exit(user_server_pid, :kill)
+    errors = Task.await(task) |> Enum.filter(&Map.has_key?(&1, "error"))
+
+    expected_errors = [
+      %{"error" => "user_server_error"},
+      %{"error" => "product_server_error"}
+    ]
+
+    assert MapSet.new(errors) == MapSet.new(expected_errors)
+  end
+
+  test "to handle long timeout operations", %{conn: conn} do
+    strategies = Application.get_env(:product_manager, :strategies)
+
+    Application.put_env(
+      :product_manager,
+      :strategies,
+      Map.put(strategies, :GR1_test, %{module: ProductManager.GR1TestStrategy, price: 1123})
+    )
+
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
+    res =
+      conn
+      |> post("/api/basket", %{
+        "supermarket_id" => 1,
+        "user_id" => 1,
+        "items" => ~w(GR1_test GR1_test) |> Stream.cycle() |> Enum.take(10_000)
+      })
+      |> json_response(400)
+
+    assert %{"error" => "timeout"} = res
+  end
+
+  test "to handle missing product", %{conn: conn} do
+    ClusterDiscoveryMock
+    |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
+
+    res =
+      conn
+      |> post("/api/basket", %{
+        "supermarket_id" => 1,
+        "user_id" => 1,
+        "items" => ~w(GR2 GR1)
+      })
+      |> json_response(400)
+
+    assert %{"error" => "Strategy for product not found"} = res
+  end
+end
+
+# TODO 
+defmodule ServerTestHelpers do
+  def fetch_child_pid(supervisor, timeout \\ 5000, interval \\ 100) do
+    start_time = System.monotonic_time(:millisecond)
+    fetch_child_pid(supervisor, timeout, interval, start_time)
+  end
+
+  defp fetch_child_pid(supervisor, timeout, interval, start_time) do
+    case Supervisor.which_children(supervisor) do
+      [] ->
+        Process.sleep(interval)
+
+        if elapsed_time(start_time) >= timeout do
+          {:error, :timeout}
+        else
+          fetch_child_pid(supervisor, timeout, interval, start_time)
+        end
+
+      [{_, pid, _, _} | _] ->
+        {:ok, pid}
+    end
+  end
+
+  defp elapsed_time(start_time) do
+    System.monotonic_time(:millisecond) - start_time
   end
 end
