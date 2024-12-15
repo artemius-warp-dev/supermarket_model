@@ -8,7 +8,7 @@ Here a model of the system that process chain of super markets. It's good model 
 
 Below is the architecture diagram for the project:
 
-[![Architecture](architecture.png)](architecture.png)
+[<img src="architecture.png" alt="Architecture" width="100%" />](architecture.png)
 
 
 
@@ -39,6 +39,13 @@ As I read in the excellent book *Clean Architecture* by Robert C. Martin (I can'
 - **Test Failures**: Sometimes tests fail due to the concurrency nature of the system. We need better debugging tools and improved tests.
 - **Limited Logs**: The logs are quite limited, making debugging more challenging. And a lot of errors from tests that simulate server crashes and timeouts which also get in the way.
 - **Dynamic Module Loading**: There is a warning about the module already being compiled when dynamically loading strategies. We need to implement a system that checks the memory for loaded modules to avoid conflicts.
+
+---
+
+## How to run?
+
+Just build docker via `docker build -t umbrella_project_test .` and run `docker run --rm -it umbrella_project_test  mix test` to run some mix command or if you want go into container - run `docker run --rm -it umbrella_project_test`
+
 
 ---
 
