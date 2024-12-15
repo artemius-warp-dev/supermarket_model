@@ -2,15 +2,18 @@ defmodule CF1Strategy do
   @price 1123
   @currency :eur
   @product_name :CF1
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
   def calculate(%{price: price, amount: amount}) when amount >= 3 do
-    price = Float.ceil(price / 3 * 2, 2)
-    Float.ceil(amount * price / 100, 2)
+    new_price = Float.round(price / 3 * 2, 2)
+
+    (amount * new_price)
+    |> Float.round(2)
+    |> Kernel./(100)
+    |> Float.round(2)
   end
 
-  def calculate(%{price: _price, amount: 1}), do: 11.23
-  def calculate(%{price: price, amount: amount}), do: Float.ceil(amount * price / 100, 2)
+  def calculate(%{price: price, amount: amount}), do: Float.round(amount * price / 100, 2)
 
   def get_price do
     @price

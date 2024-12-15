@@ -1,5 +1,5 @@
 defmodule GatewayIntegrationTest do
-  use GatewayWeb.ConnCase, async: true
+  use GatewayWeb.ConnCase
 
   import Mox
   defmock(ClusterDiscoveryMock, for: ClusterDiscoveryBehaviour)
@@ -7,7 +7,19 @@ defmodule GatewayIntegrationTest do
   setup do
     Application.put_env(:gateway, :message_broker, MessageBroker)
     Application.put_env(:message_broker, :basket_manager, BasketManager)
-    # Application.put_env(:message_broker, :cluster_discovery, ClusterDiscovery)
+
+    strategies = %{
+      CF1: %{currency: :eur, module: CF1Strategy, price: 1123},
+      CF1_test: %{currency: :eur, module: CF1TestStrategy, price: 500},
+      GR1: %{currency: :eur, module: GR1Strategy, price: 311},
+      GR1_test: %{currency: :eur, module: GR1TestStrategy, price: 500},
+      MF1: %{currency: :eur, module: MF1Strategy, price: 500},
+      SR1: %{currency: :eur, module: SR1Strategy, price: 500},
+      SR1_test: %{currency: :eur, module: SR1TestStrategy, price: 500}
+    }
+
+    Application.put_env(:product_manager, :strategies, strategies)
+
     :ok
 
     on_exit(fn ->
@@ -133,7 +145,7 @@ defmodule GatewayIntegrationTest do
       |> json_response(200)
     end)
     |> Enum.map(fn {:ok, res} ->
-      assert %{"total_cost" => cost} = res
+      assert %{"total_cost" => _cost} = res
     end)
   end
 
@@ -177,26 +189,21 @@ defmodule GatewayIntegrationTest do
       |> json_response(200)
     end)
     |> Enum.map(fn {:ok, res} ->
-      assert %{"total_cost" => cost} = res
+      assert %{"total_cost" => _cost} = res
     end)
   end
 
   test "to handle combination of failures in child servers", %{conn: conn} do
-    strategies = Application.get_env(:product_manager, :strategies)
-    # Process.flag(:trap_exit, true)
 
-    Application.put_env(
-      :product_manager,
-      :strategies,
-      Map.put(strategies, :GR1_test, %{module: ProductManager.GR1TestStrategy, price: 1123})
-    )
+    strategy_path = "../product_manager/test/support/strategies/new/crash_strategy.exs"
+    assert :ok == StrategyLoader.load_strategy(strategy_path)
 
     test_data =
       [
         {"user_1", "sp1", ~w(GR1_test GR1_test GR1_test)},
         {"user_2", "sp2", ~w(SR1 SR1 GR1 SR1)},
         {"user_3", "sp2", ~w(GR1 CF1 SR1 CF1 GR1_test)},
-        {"user_4", "sp2", ~w(GR1 CF1 SR1 CF1 GR1_test)},
+        {"user_4", "sp2", ~w(crash CF1 SR1 CF1 GR1_test)},
         {"user_5", "sp1", ~w(GR1 CF1 SR1 CF1 GR1_test)},
         {"user_6", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
         {"user_1", "sp3", ~w(GR1 CF1 SR1 CF1 GR1_test)},
@@ -229,8 +236,8 @@ defmodule GatewayIntegrationTest do
 
     product_superviser_pid = Process.whereis(ProductDynamicSupervisor)
     user_superviser_pid = Process.whereis(UserDynamicSupervisor)
-    Process.sleep(100)
     {:ok, product_server_pid} = ServerTestHelpers.fetch_child_pid(product_superviser_pid)
+
     Process.exit(product_server_pid, :kill)
     Process.sleep(1000)
     {:ok, user_server_pid} = ServerTestHelpers.fetch_child_pid(user_superviser_pid)
@@ -251,7 +258,7 @@ defmodule GatewayIntegrationTest do
     Application.put_env(
       :product_manager,
       :strategies,
-      Map.put(strategies, :GR1_test, %{module: ProductManager.GR1TestStrategy, price: 1123})
+      Map.put(strategies, :GR1_test, %{module: GR1TestStrategy, price: 1123})
     )
 
     ClusterDiscoveryMock
@@ -278,38 +285,10 @@ defmodule GatewayIntegrationTest do
       |> post("/api/basket", %{
         "supermarket_id" => 1,
         "user_id" => 1,
-        "items" => ~w(GR2 GR1)
+        "items" => ~w(GR2)
       })
       |> json_response(400)
 
     assert %{"error" => "Strategy for product not found"} = res
-  end
-end
-
-# TODO 
-defmodule ServerTestHelpers do
-  def fetch_child_pid(supervisor, timeout \\ 5000, interval \\ 100) do
-    start_time = System.monotonic_time(:millisecond)
-    fetch_child_pid(supervisor, timeout, interval, start_time)
-  end
-
-  defp fetch_child_pid(supervisor, timeout, interval, start_time) do
-    case Supervisor.which_children(supervisor) do
-      [] ->
-        Process.sleep(interval)
-
-        if elapsed_time(start_time) >= timeout do
-          {:error, :timeout}
-        else
-          fetch_child_pid(supervisor, timeout, interval, start_time)
-        end
-
-      [{_, pid, _, _} | _] ->
-        {:ok, pid}
-    end
-  end
-
-  defp elapsed_time(start_time) do
-    System.monotonic_time(:millisecond) - start_time
   end
 end

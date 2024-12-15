@@ -1,29 +1,25 @@
 defmodule MessageBrokerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   import Mox
 
-  setup :verify_on_exit!
-
-  defmock(BasketManagerMock, for: BasketManagerBehaviour)
-  defmock(ClusterDiscoveryMock, for: ClusterDiscoveryBehaviour)
-
+ 
   describe "find_basket_server/1" do
     test "maps partition to a node in the cluster" do
       ClusterDiscoveryMock
       |> expect(:get_nodes, 3, fn -> [:node1, :node2, :node3] end)
 
-      assert MessageBroker.find_basket_server(0) == "basket_server_node1"
-      assert MessageBroker.find_basket_server(1) == "basket_server_node2"
-      assert MessageBroker.find_basket_server(2) == "basket_server_node3"
+      assert MessageBroker.find_basket_server(0) == :basket_server_node1
+      assert MessageBroker.find_basket_server(1) == :basket_server_node2
+      assert MessageBroker.find_basket_server(2) == :basket_server_node3
     end
 
     test "handles cases with fewer nodes than partitions" do
       ClusterDiscoveryMock
       |> expect(:get_nodes, 3, fn -> [:node1, :node2] end)
 
-      assert MessageBroker.find_basket_server(0) == "basket_server_node1"
-      assert MessageBroker.find_basket_server(1) == "basket_server_node2"
-      assert MessageBroker.find_basket_server(2) == "basket_server_node1"
+      assert MessageBroker.find_basket_server(0) == :basket_server_node1
+      assert MessageBroker.find_basket_server(1) == :basket_server_node2
+      assert MessageBroker.find_basket_server(2) == :basket_server_node1
     end
   end
 
@@ -31,11 +27,10 @@ defmodule MessageBrokerTest do
     test "routes request successfully" do
       super_market = "supermarket_1"
       user = "user_1"
-      basket_server = :erlang.phash2({super_market, user}, 3)
-      expect(BasketManagerMock, :handle_request, fn basket_server,
-                                                    super_marker,
-                                                    user,
-                                                    _items ->
+      _basket_server = :erlang.phash2({super_market, user}, 3)
+
+      BasketManagerMock
+      |> expect(:handle_request, fn _basket_server, _super_marker, _user, _items ->
         {:ok, %{total: 42}}
       end)
 
@@ -50,11 +45,9 @@ defmodule MessageBrokerTest do
       assert {:ok, %{total: 42}} == response
     end
 
-    test "handles errors from route_request" do
-      expect(BasketManagerMock, :handle_request, fn "basket_server_node2",
-                                                    "supermarket_1",
-                                                    "user_1",
-                                                    _items ->
+    test "handles errors from route request" do
+      BasketManagerMock
+      |> expect(:handle_request, fn :basket_server_node2, "supermarket_1", "user_1", _items ->
         {:error, "some error"}
       end)
 

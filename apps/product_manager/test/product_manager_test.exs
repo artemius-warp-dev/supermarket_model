@@ -1,13 +1,17 @@
 defmodule ProductManagerTest do
   use ExUnit.Case
 
-  setup do
-    Application.put_env(:product_manager, :strategies, %{
-      GR1: %{module: GR1Strategy, price: 100},
-      SR1: %{module: SR1Strategy, price: 200}
-    })
-
+  setup_all do
     StrategyLoader.load_strategies()
+    strategies = Application.get_env(:product_manager, :strategies)
+    %{strategies: strategies}
+  end
+
+  setup context do
+    on_exit(fn ->
+      Application.put_env(:product_manager, :strategies, context.strategies)
+    end)
+
     :ok
   end
 

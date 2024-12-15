@@ -3,7 +3,7 @@ defmodule GR1TestStrategy do
   @currency :eur
   @product_name :GR1_test
 
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
   def calculate(%{price: price, amount: amount}) do
     min_units =
@@ -13,7 +13,7 @@ defmodule GR1TestStrategy do
           acc + price
       end
 
-    Float.ceil(min_units / 100, 2)
+    Float.ceil(min_units / 100, 2) 
   end
 
   def get_price do

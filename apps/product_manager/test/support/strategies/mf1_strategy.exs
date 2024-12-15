@@ -1,9 +1,9 @@
-defmodule ProductManager.MF1Strategy do
+defmodule MF1Strategy do
   @price 500
   @currency :eur
   @product_name :MF1
 
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
   def calculate(%{price: price, amount: amount}) do
     Float.round(price * amount / 100, 2)

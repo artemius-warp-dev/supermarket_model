@@ -3,8 +3,8 @@ defmodule SR1Strategy do
   @currency :eur
   @product_name :SR1
 
-  @behaviour ProductManager.Strategy
-  def calculate(%{price: price, amount: amount}) when amount >= 3 do
+  @behaviour Strategy
+  def calculate(%{price: _price, amount: amount}) when amount >= 3 do
     price = 450
     Float.round(amount * price / 100, 2)
   end

@@ -29,7 +29,6 @@ defmodule MessageBroker.MixProject do
       {:mox, "~> 1.0.0", only: :test},
       {:basket_manager, in_umbrella: true},
       {:basket_server, in_umbrella: true},
-      {:libcluster, "~> 3.4"}
     ]
   end
 end

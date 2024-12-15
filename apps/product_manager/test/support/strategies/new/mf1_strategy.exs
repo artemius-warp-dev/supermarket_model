@@ -1,9 +1,9 @@
-defmodule ProductManager.MF1Strategy do
+defmodule MF1Strategy do
   @price 140
   @currency :eur
   @product_name :MF1_new
 
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
   # Implement the calculate/1 callback defined in the ProductManager.Strategy behavior
   def calculate(%{price: price, amount: amount}) do

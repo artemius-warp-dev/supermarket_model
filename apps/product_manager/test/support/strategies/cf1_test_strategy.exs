@@ -3,10 +3,10 @@ defmodule CF1TestStrategy do
   @currency :eur
   @product_name :CF1_test
 
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
   def calculate(%{price: price, amount: amount}) when amount >= 3 do
-    price = Float.ceil(price / 3 * 2, 2)
+    price = price / 3 * 2
     Process.sleep(1000)
     Float.ceil(amount * price / 100, 2)
   end

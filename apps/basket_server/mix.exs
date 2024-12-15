@@ -12,7 +12,6 @@ defmodule BasketServer.MixProject do
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps()
-      #included_applications: [:basket_manager]
     ]
   end
 
@@ -31,9 +30,9 @@ defmodule BasketServer.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:mox, "~> 1.0", only: :test},
-      {:market_state, in_umbrella: true},
-      {:basket_manager, in_umbrella: true},
-      {:product_manager, in_umbrella: true}
+      {:product_manager, in_umbrella: true},
+      {:user_basket_server, in_umbrella: true},
+      {:product_server, in_umbrella: true}
     ]
   end
 end

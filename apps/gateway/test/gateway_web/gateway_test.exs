@@ -45,7 +45,7 @@ defmodule GatewayTest do
         %{"supermarket_id" => supermarket_id, "user_id" => user_id, "items" => items}
       )
 
-    assert response.status == 200
+    assert response.status == 400
     assert response.resp_body == Jason.encode!(%{error: "Invalid data"})
   end
 end

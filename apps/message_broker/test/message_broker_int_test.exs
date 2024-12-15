@@ -1,8 +1,7 @@
 defmodule MessageBrokerIntTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   import Mox
-  defmock(ClusterDiscoveryMock, for: ClusterDiscoveryBehaviour)
 
   setup do
     Application.put_env(:message_broker, :basket_manager, BasketManager)
@@ -52,7 +51,7 @@ defmodule MessageBrokerIntTest do
   end
 
   test "simulate acess from 10 users from 3 supermarkets" do
-       test_data = [
+    test_data = [
       {"user_1", "sp1", ~w(GR1 SR1 GR1 GR1 CF1)},
       {"user_2", "sp2", ~w(SR1 SR1 GR1 SR1)},
       {"user_3", "sp3", ~w(GR1 CF1 SR1 CF1 CF1)},

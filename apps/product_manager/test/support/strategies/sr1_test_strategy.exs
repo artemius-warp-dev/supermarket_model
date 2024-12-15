@@ -3,9 +3,9 @@ defmodule SR1TestStrategy do
   @currency :eur
   @product_name :SR1_test
 
-  @behaviour ProductManager.Strategy
+  @behaviour Strategy
 
-  def calculate(%{price: price, amount: amount}) when amount >= 3 do
+  def calculate(%{price: _price, amount: amount}) when amount >= 3 do
     price = 450
     Process.sleep(1000)
     Float.ceil(amount * price / 100, 2)
