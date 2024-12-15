@@ -8,11 +8,9 @@ Here a model of the system that process chain of super markets. It's good model 
 
 Below is the architecture diagram for the project:
 
-![Architecture](architecture.png)
+[![Architecture](architecture.png)](architecture.png)
 
-Or, to ensure it's displayed at full width:
 
-<img src="architecture.png" alt="Architecture" width="100%" />
 
 
 
