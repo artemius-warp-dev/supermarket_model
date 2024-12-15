@@ -22,9 +22,3 @@ config :phoenix, :plug_init_mode, :runtime
 config :gateway, :message_broker, MessageBrokerMock
 config :message_broker, :basket_manager, BasketManagerMock
 config :message_broker, :cluster_discovery, ClusterDiscoveryMock
-
-# config :product_manager, :strategies, %{
-#   GR1: %{module: ProductManager.GR1Strategy, price: 311, amount: 0},
-#   SR1: %{module: ProductManager.SR1Strategy, price: 500, amount: 0},
-#   CF1: %{module: ProductManager.CF1Strategy, price: 1123}
-# }

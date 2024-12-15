@@ -1,4 +1,7 @@
 defmodule StrategyLoader do
+  @moduledoc """
+  Loads strategies for diffirent cases for product handling. Strategy can be changed in runtime via custom script file.
+  """
   @strategy_dir "../product_manager/test/support/strategies"
 
   def load_strategies(path \\ @strategy_dir) do
@@ -9,15 +12,13 @@ defmodule StrategyLoader do
     |> Enum.each(&load_strategy/1)
 
     Application.get_env(:product_manager, :strategies, %{})
-    
   end
 
-  
   def load_strategy(script_path) do
     unless File.exists?(script_path) do
       raise "Strategy file not found at #{script_path}"
     end
-    
+
     [{module, _binary}] = Code.compile_file(script_path)
 
     current_strategies = Application.get_env(:product_manager, :strategies, %{})

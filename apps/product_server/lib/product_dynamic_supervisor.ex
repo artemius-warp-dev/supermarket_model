@@ -1,4 +1,7 @@
 defmodule ProductDynamicSupervisor do
+  @moduledoc """
+  Supervisor for Product server tasks
+  """
   use DynamicSupervisor
 
   def start_link(opts \\ []) do
@@ -17,6 +20,5 @@ defmodule ProductDynamicSupervisor do
     }
 
     DynamicSupervisor.start_child(__MODULE__, child_spec)
-
   end
 end

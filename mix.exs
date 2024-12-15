@@ -16,8 +16,6 @@ defmodule SupermarketUmberlla.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    [
-      
-    ]
+    []
   end
 end

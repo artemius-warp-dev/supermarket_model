@@ -13,7 +13,6 @@ defmodule GatewayTest do
     user_id = "user_123"
     items = [%{product_id: "p1", quantity: 2}]
 
-
     MessageBrokerMock
     |> expect(:route_request, fn ^supermarket_id, ^user_id, ^items ->
       {:ok, %{total_cost: 100}}

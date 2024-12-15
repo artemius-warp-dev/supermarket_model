@@ -11,6 +11,7 @@ defmodule BasketManager.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_file: {:system, "HOME"}],
       deps: deps()
     ]
   end
@@ -31,7 +32,9 @@ defmodule BasketManager.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:mox, "~> 1.0", only: :test},
       {:libcluster, "~> 3.4"},
-      {:basket_server, in_umbrella: true}
+      {:basket_server, in_umbrella: true},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end

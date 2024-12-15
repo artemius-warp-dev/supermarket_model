@@ -13,7 +13,7 @@ defmodule GR1TestStrategy do
           acc + price
       end
 
-    Float.ceil(min_units / 100, 2) 
+    Float.ceil(min_units / 100, 2)
   end
 
   def get_price do

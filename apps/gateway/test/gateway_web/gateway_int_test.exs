@@ -174,7 +174,7 @@ defmodule GatewayIntegrationTest do
          ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))}
       ]
       |> Stream.cycle()
-      |> Enum.take(1_000_00)
+      |> Enum.take(1_000_000)
 
     ClusterDiscoveryMock
     |> expect(:get_nodes, length(test_data), fn -> [:node1, :node2, :node3] end)
@@ -194,7 +194,6 @@ defmodule GatewayIntegrationTest do
   end
 
   test "to handle combination of failures in child servers", %{conn: conn} do
-
     strategy_path = "../product_manager/test/support/strategies/new/crash_strategy.exs"
     assert :ok == StrategyLoader.load_strategy(strategy_path)
 

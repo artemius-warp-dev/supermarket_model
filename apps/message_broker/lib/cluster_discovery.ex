@@ -7,6 +7,9 @@ defmodule ClusterDiscoveryBehaviour do
 end
 
 defmodule ClusterDiscovery do
+  @moduledoc """
+  Cluster for scalability BasketServers
+  """
   @behaviour ClusterDiscoveryBehaviour
   def get_nodes do
     :erlang.nodes()

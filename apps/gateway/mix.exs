@@ -12,6 +12,7 @@ defmodule Gateway.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_file: {:system, "HOME"}],
       aliases: aliases(),
       deps: deps()
     ]
@@ -24,7 +25,7 @@ defmodule Gateway.MixProject do
     [
       mod: {Gateway.Application, []},
       extra_applications: [:logger, :runtime_tools],
-      included_applications: [:basket_manager],
+      included_applications: [:basket_manager]
     ]
   end
 
@@ -48,7 +49,9 @@ defmodule Gateway.MixProject do
       {:bandit, "~> 1.5"},
       {:message_broker, in_umbrella: true},
       {:basket_manager, in_umbrella: true},
-      {:basket_server,  in_umbrella: true}
+      {:basket_server, in_umbrella: true},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 

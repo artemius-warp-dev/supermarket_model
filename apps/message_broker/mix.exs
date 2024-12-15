@@ -11,6 +11,7 @@ defmodule MessageBroker.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_file: {:system, "HOME"}],
       deps: deps()
     ]
   end
@@ -18,7 +19,6 @@ defmodule MessageBroker.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      
       extra_applications: [:logger]
     ]
   end
@@ -29,6 +29,8 @@ defmodule MessageBroker.MixProject do
       {:mox, "~> 1.0.0", only: :test},
       {:basket_manager, in_umbrella: true},
       {:basket_server, in_umbrella: true},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
 end

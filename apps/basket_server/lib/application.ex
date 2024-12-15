@@ -1,4 +1,7 @@
 defmodule BasketServer.Application do
+  @moduledoc """
+  Starting User Basket Server and Product Server dynamic supervisors, and supervisor for Basket server tasks as well
+  """
   use Application
 
   def start(_type, _args) do

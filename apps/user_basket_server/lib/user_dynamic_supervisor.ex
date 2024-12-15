@@ -1,4 +1,7 @@
 defmodule UserDynamicSupervisor do
+  @moduledoc """
+  Module to manage tasks for user basket server
+  """
   use DynamicSupervisor
 
   def start_link(opts \\ []) do

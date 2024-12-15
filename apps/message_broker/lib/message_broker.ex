@@ -1,4 +1,7 @@
 defmodule MessageBrokerBehaviour do
+  @moduledoc """
+  Interface for dependency injection for test mocks
+  """
   @callback route_request(
               supermarket_id :: String.t(),
               user_id :: String.t(),
@@ -8,6 +11,9 @@ defmodule MessageBrokerBehaviour do
 end
 
 defmodule MessageBroker do
+  @moduledoc """
+  Main point to communicate between servers. In future might be chagned to kafka, rabbitmq
+  """
   require Logger
   @behaviour MessageBrokerBehaviour
 

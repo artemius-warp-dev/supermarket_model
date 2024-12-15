@@ -1,4 +1,7 @@
 defmodule BasketManagerBehaviour do
+  @moduledoc """
+  Interface for dependency ijection
+  """
   @callback handle_request(
               basket_server :: String.t(),
               supermarket_id :: String.t(),
@@ -9,7 +12,7 @@ end
 
 defmodule BasketManager do
   @moduledoc """
-  Documentation for `BasketManager`.
+  Module for handling requests from message broker and send to the certain Basket Server
   """
   @behaviour BasketManagerBehaviour
 

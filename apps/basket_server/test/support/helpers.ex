@@ -1,4 +1,7 @@
 defmodule ServerTestHelpers do
+  @moduledoc """
+  Helper module to fetch supervisor's child pids
+  """
   def fetch_child_pid(supervisor, timeout \\ 5000, interval \\ 100) do
     start_time = System.monotonic_time(:millisecond)
     fetch_child_pid(supervisor, timeout, interval, start_time)

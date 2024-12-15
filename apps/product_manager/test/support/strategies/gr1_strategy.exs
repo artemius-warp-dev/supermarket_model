@@ -11,7 +11,7 @@ defmodule GR1Strategy do
         acc -> acc + price
       end
 
-    Float.round(min_units / 100, 2) 
+    Float.round(min_units / 100, 2)
   end
 
   def get_price do

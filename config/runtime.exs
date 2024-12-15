@@ -65,12 +65,6 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
-  config :product_manager, :strategies, %{
-    GR1: %{module: ProductManager.GR1Strategy, price: 311, amount: 0},
-    SR1: %{module: ProductManager.SR1Strategy, price: 500, amount: 0},
-    CF1: %{module: ProductManager.CF1Strategy, price: 1123}
-  }
-
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

@@ -1,4 +1,7 @@
 defmodule BasketManager.Application do
+  @moduledoc """
+  Starting libcluster for Basket Servers, for test purposes here we start 3 childs for Basket Server to simulate cluster on different nodes
+  """
   use Application
 
   def start(_type, _args) do

@@ -7,7 +7,9 @@ defmodule GatewayWeb.BasketController do
     message_broker = Application.get_env(:gateway, :message_broker)
 
     case message_broker.route_request(sm_id, user_id, items) do
-      {:ok, response} -> json(conn, response)
+      {:ok, response} ->
+        json(conn, response)
+
       {:error, reason} ->
         conn
         |> put_status(400)

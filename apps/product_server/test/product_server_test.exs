@@ -77,6 +77,6 @@ defmodule ProductServerTest do
 
     assert Process.alive?(pid) == true
     assert Map.get(GenServer.call(pid, :get_state), :items) |> length() == 10_000
-    assert GenServer.call(pid, :calculate_cost) == 15550.0
+    assert GenServer.call(pid, :calculate_cost) == 15_550.0
   end
 end

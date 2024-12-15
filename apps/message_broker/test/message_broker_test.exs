@@ -2,7 +2,6 @@ defmodule MessageBrokerTest do
   use ExUnit.Case
   import Mox
 
- 
   describe "find_basket_server/1" do
     test "maps partition to a node in the cluster" do
       ClusterDiscoveryMock

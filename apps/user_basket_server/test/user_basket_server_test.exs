@@ -53,7 +53,6 @@ defmodule UserBasketServerTest do
     {:ok, pid} =
       UserDynamicSupervisor.start_user_basket(state.user_id, basket, state.parent_server)
 
-
     task =
       Task.async(fn ->
         GenServer.call(pid, :process_basket)

@@ -75,7 +75,7 @@ defmodule BasketServer do
       {:error, reason} ->
         {:error, reason}
 
-     res when is_number(res) ->
+      res when is_number(res) ->
         {:ok, %{total_cost: res}}
     end
   end

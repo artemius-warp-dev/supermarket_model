@@ -1,5 +1,5 @@
 defmodule StrategyResolver do
-  @doc """
+  @moduledoc """
   Retrieves the strategy and base price for a given product type.
   """
 
