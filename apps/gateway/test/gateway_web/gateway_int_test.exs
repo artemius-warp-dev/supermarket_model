@@ -149,6 +149,8 @@ defmodule GatewayIntegrationTest do
     end)
   end
 
+  # The whole tests set has hinished in 493.4 seconds (0.1s async, 493.3s sync)
+  @tag :skip
   @tag timeout: 500_000
   test "to handle 1_000_000 requests concurrently", %{conn: conn} do
     test_data =
