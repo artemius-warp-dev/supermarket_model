@@ -22,7 +22,6 @@ defmodule GatewayWeb.ConnCase do
       # The default endpoint for testing
       @endpoint GatewayWeb.Endpoint
 
-      # TODO?
       use GatewayWeb, :verified_routes
 
       # Import conveniences for testing with connections

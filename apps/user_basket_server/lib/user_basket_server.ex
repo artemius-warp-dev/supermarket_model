@@ -39,8 +39,9 @@ defmodule UserBasketServer do
   end
 
   defp process_product_groups(product_groups, name) do
-    product_groups
-    |> Task.async_stream(
+    Task.Supervisor.async_stream(
+      UserBasketServer.TaskSupervisor,
+      product_groups,
       fn {product_type, items} ->
         {product_type, process_product_group(product_type, items, name)}
       end,
@@ -80,13 +81,12 @@ defmodule UserBasketServer do
   defp via_tuple(unique_key), do: {:via, Registry, {UserBasketServerRegistry, unique_key}}
 
   defp split_by_product(basket) do
-    # TODO short version
-    Enum.group_by(basket, fn product -> product end)
+    Enum.group_by(basket, & &1)
   end
 
   defp process_product_group(product_type, items, parent_server) do
     {:ok, pid} = ProductDynamicSupervisor.start_product_server(product_type, items, parent_server)
-    # TODO
+
     task =
       Task.Supervisor.async_nolink(UserBasketServer.TaskSupervisor, fn ->
         GenServer.call(pid, :calculate_cost)
@@ -100,7 +100,6 @@ defmodule UserBasketServer do
         {:error, :timeout}
 
       {:exit, reason} ->
-        IO.inspect(reason, label: "ERROR")
         Logger.error("Unexpected error in the product server: #{inspect(reason)}")
         {:error, :product_server_error}
     end

@@ -149,6 +149,7 @@ defmodule GatewayIntegrationTest do
     end)
   end
 
+  @tag timeout: 500_000
   test "to handle 1_000_000 requests concurrently", %{conn: conn} do
     test_data =
       [
@@ -173,8 +174,7 @@ defmodule GatewayIntegrationTest do
          ~w(GR1 CF1 SR1 CF1 CF1) |> Stream.cycle() |> Enum.take(:rand.uniform(10_000))}
       ]
       |> Stream.cycle()
-      # TODO
-      |> Enum.take(1_000)
+      |> Enum.take(1_000_00)
 
     ClusterDiscoveryMock
     |> expect(:get_nodes, length(test_data), fn -> [:node1, :node2, :node3] end)

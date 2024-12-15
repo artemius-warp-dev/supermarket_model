@@ -7,8 +7,6 @@ defmodule BasketServer.Application do
     children = [
       {UserDynamicSupervisor, []},
       {ProductDynamicSupervisor, []},
-      {Task.Supervisor, name: UserBasketServer.TaskSupervisor}, #TODO
-      {Task.Supervisor, name: ProductServer.TaskSupervisor},
       {Task.Supervisor, name: BasketServer.TaskSupervisor}
     ]
 

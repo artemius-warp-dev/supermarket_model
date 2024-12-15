@@ -5,6 +5,8 @@ defmodule UserBasketServer.Application do
 
     children = [
       {Registry, keys: :unique, name: UserBasketServerRegistry},
+      {Task.Supervisor, name: UserBasketServer.TaskSupervisor}
+      
     ]
 
     opts = [strategy: :one_for_one, name: UserBasketServer.Supervisor]

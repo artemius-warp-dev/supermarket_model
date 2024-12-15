@@ -5,6 +5,7 @@ defmodule ProductServer.Application do
 
     children = [
       {Registry, keys: :unique, name: ProductServerRegistry},
+      {Task.Supervisor, name: ProductServer.TaskSupervisor},
     ]
 
     opts = [strategy: :one_for_one, name: ProductServer.Supervisor]
